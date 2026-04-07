@@ -212,7 +212,7 @@ def feedback():
                     msg_body = f"Hi {username},\n\nThank you so much for attending '{event_name}' and leaving your valuable feedback!\n\nWe appreciate your input and hope to see you at future events.\n\nBest Regards,\nEventopia Team"
                     msg = MIMEText(msg_body)
                     msg["Subject"] = "Thank You for Your Feedback!"
-                   msg["From"] = os.getenv("EMAIL_USER")
+                    msg["From"] = os.getenv("EMAIL_USER")
                     msg["To"] = email
                     
                     server = smtplib.SMTP("smtp.gmail.com", 587)
