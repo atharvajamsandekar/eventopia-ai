@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #f8f9ff);
+    padding: 40px;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+    color: #2c2c54;
+}
+
+p.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+label {
+    font-weight: 600;
+    color: #444;
+}
+
+input, textarea, select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    background: #fafafa;
+    width: 100%;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+    background: white;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+button[type="submit"] {
+    flex: 1;
+    background: linear-gradient(135deg, #6c63ff, #5a54e8);
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.cancel-btn {
+    flex: 1;
+    background: #e2e8f0;
+    color: #334155;
+    text-align: center;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.cancel-btn:hover {
+    background: #cbd5e1;
+    color: #1e293b;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-container input {
+    width: auto;
+}
+</style>
+
+<div class="container">
+    <h1>Edit Tech Fest Details</h1>
+    <p class="subtitle">Modify the details for <strong>{{ fest.name }}</strong></p>
+
+    <form method="POST" action="/edit_tech_fest/{{ fest.id }}">
+        
+        <div>
+            <label for="name">Tech Fest Name</label>
+            <input type="text" id="name" name="name" value="{{ fest.name }}" required>
+        </div>
+        
+        <div>
+            <label for="department">Department</label>
+            <select id="department" name="department" required>
+                <option value="All Departments" {% if fest.department == "All Departments" %}selected{% endif %}>All Departments</option>
+                <option value="IT" {% if fest.department == "IT" %}selected{% endif %}>IT</option>
+                <option value="CSE(AIML)" {% if fest.department == "CSE(AIML)" %}selected{% endif %}>CSE(AIML)</option>
+                <option value="Mechanical" {% if fest.department == "Mechanical" %}selected{% endif %}>Mechanical</option>
+                <option value="Electrical" {% if fest.department == "Electrical" %}selected{% endif %}>Electrical</option>
+                <option value="ENTC" {% if fest.department == "ENTC" %}selected{% endif %}>ENTC</option>
+                <option value="CSE(Cyber Security)" {% if fest.department == "CSE(Cyber Security)" %}selected{% endif %}>CSE(Cyber Security)</option>
+                <option value="CHEMICAL" {% if fest.department == "CHEMICAL" %}selected{% endif %}>CHEMICAL</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="fest_date">Tech Fest Date</label>
+            <input type="date" id="fest_date" name="fest_date" value="{{ fest.fest_date }}" required>
+        </div>
+        
+        <div>
+            <label for="venue">Venue</label>
+            <input type="text" id="venue" name="venue" value="{{ fest.venue }}" required>
+        </div>
+        
+        <div>
+            <label for="description">Description</label>
+            <textarea id="description" name="description" required rows="4">{{ fest.description }}</textarea>
+        </div>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="show_on_home" name="show_on_home" value="true" {% if fest.show_on_home %}checked{% endif %}>
+            <label for="show_on_home" style="margin: 0; font-weight: normal; cursor: pointer;">Show on Homepage</label>
+        </div>
+        
+        <div class="button-group">
+            <a href="/admin" class="cancel-btn">Cancel</a>
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

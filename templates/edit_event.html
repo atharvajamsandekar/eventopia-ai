@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #f8f9ff);
+    padding: 40px;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+    color: #2c2c54;
+}
+
+p.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+label {
+    font-weight: 600;
+    color: #444;
+}
+
+input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    background: #fafafa;
+    width: 100%;
+}
+
+input:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+    background: white;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+button[type="submit"] {
+    flex: 1;
+    background: linear-gradient(135deg, #6c63ff, #5a54e8);
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.cancel-btn {
+    flex: 1;
+    background: #e2e8f0;
+    color: #334155;
+    text-align: center;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.cancel-btn:hover {
+    background: #cbd5e1;
+    color: #1e293b;
+}
+</style>
+
+<div class="container">
+    <h1>Edit Event Details</h1>
+    <p class="subtitle">Modify the date, time, and registration fee for <strong>{{ event.name }}</strong></p>
+
+    <form method="POST" action="/edit_event/{{ event.id }}">
+        
+        <div>
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <option value="Technical events" {% if event.category == "Technical events" %}selected{% endif %}>Technical Events</option>
+                <option value="FUN Games" {% if event.category == "FUN Games" %}selected{% endif %}>FUN Games</option>
+                <option value="Seminars and Panel" {% if event.category == "Seminars and Panel" %}selected{% endif %}>Seminars and Panel</option>
+                <option value="Tech expo" {% if event.category == "Tech expo" %}selected{% endif %}>Tech Expo</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="event_type">Event Type</label>
+            <select id="event_type" name="event_type" required>
+                <option value="Individual" {% if event.event_type == "Individual" %}selected{% endif %}>Individual Event</option>
+                <option value="Group" {% if event.event_type == "Group" %}selected{% endif %}>Group / Team Event</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="department">Department</label>
+            <select id="department" name="department" required>
+                <option value="All Departments" {% if event.department == "All Departments" %}selected{% endif %}>All Departments</option>
+                <option value="IT" {% if event.department == "IT" %}selected{% endif %}>IT</option>
+                <option value="CSE(AIML)" {% if event.department == "CSE(AIML)" %}selected{% endif %}>CSE(AIML)</option>
+                <option value="Mechanical" {% if event.department == "Mechanical" %}selected{% endif %}>Mechanical</option>
+                <option value="Electrical" {% if event.department == "Electrical" %}selected{% endif %}>Electrical</option>
+                <option value="ENTC" {% if event.department == "ENTC" %}selected{% endif %}>ENTC</option>
+                <option value="CSE(Cyber Security)" {% if event.department == "CSE(Cyber Security)" %}selected{% endif %}>CSE(Cyber Security)</option>
+                <option value="CHEMICAL" {% if event.department == "CHEMICAL" %}selected{% endif %}>CHEMICAL</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="tech_fest_id">Link to Tech Fest (Optional)</label>
+            <select id="tech_fest_id" name="tech_fest_id">
+                <option value="" {% if not event.tech_fest_id %}selected{% endif %}>-- No Tech Fest --</option>
+                {% for t in tech_fests %}
+                <option value="{{t.id}}" {% if event.tech_fest_id == t.id %}selected{% endif %}>{{t.name}} ({{t.department}})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="event_date">Event Date</label>
+            <input type="date" id="event_date" name="event_date" value="{{ event.event_date }}" required>
+        </div>
+        
+        <div>
+            <label for="event_time">Event Time</label>
+            <input type="time" id="event_time" name="event_time" value="{{ event.event_time }}" required>
+        </div>
+        
+        <div>
+            <label for="price">Registration Fee (₹)</label>
+            <input type="number" id="price" name="price" value="{{ event.price }}" min="0" required>
+        </div>
+        
+        <div class="button-group">
+            <a href="/admin" class="cancel-btn">Cancel</a>
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

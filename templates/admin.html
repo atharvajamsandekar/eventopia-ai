@@ -11,7 +11,6 @@ padding:40px;
 color:#333;
 }
 
-/* main card */
 .container{
 max-width:1100px;
 margin:auto;
@@ -19,10 +18,8 @@ background:white;
 padding:40px;
 border-radius:16px;
 box-shadow:0 20px 50px rgba(0,0,0,0.08);
-transition:0.3s;
 }
 
-/* headings */
 h1{
 font-size:32px;
 margin-bottom:30px;
@@ -38,7 +35,6 @@ border-left:5px solid #6c63ff;
 padding-left:10px;
 }
 
-/* form layout */
 form{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -46,19 +42,16 @@ gap:15px;
 margin-bottom:30px;
 }
 
-/* full width textarea */
 textarea{
 grid-column:1/-1;
 min-height:80px;
 }
 
-/* inputs */
 input,textarea,select{
 padding:12px;
 border-radius:8px;
 border:1px solid #e0e0e0;
 font-size:14px;
-transition:0.25s;
 background:#fafafa;
 }
 
@@ -69,7 +62,6 @@ box-shadow:0 0 0 3px rgba(108,99,255,0.15);
 background:white;
 }
 
-/* buttons */
 button{
 background:linear-gradient(135deg,#6c63ff,#5a54e8);
 color:white;
@@ -77,8 +69,6 @@ border:none;
 padding:12px 20px;
 border-radius:8px;
 cursor:pointer;
-font-weight:500;
-transition:0.25s;
 }
 
 button:hover{
@@ -86,7 +76,6 @@ transform:translateY(-2px);
 box-shadow:0 8px 20px rgba(0,0,0,0.15);
 }
 
-/* table styling */
 table{
 width:100%;
 border-collapse:collapse;
@@ -95,152 +84,297 @@ border-radius:10px;
 overflow:hidden;
 }
 
-/* header */
 table th{
 background:linear-gradient(135deg,#6c63ff,#7a73ff);
 color:white;
 padding:14px;
 text-align:left;
-font-weight:500;
 }
 
-/* table rows */
 table td{
 padding:14px;
 border-bottom:1px solid #f0f0f0;
 }
 
-/* zebra rows */
 table tr:nth-child(even){
 background:#fafbff;
 }
 
-/* hover row */
 table tr:hover{
 background:#f1f3ff;
-transition:0.2s;
 }
 
-/* delete button */
 .delete{
 background:linear-gradient(135deg,#ff5f6d,#ff2e4d);
 padding:8px 14px;
 border-radius:6px;
 }
 
-.delete:hover{
-box-shadow:0 5px 15px rgba(255,0,0,0.3);
-}
 .download-btn{
 background:#10b981;
-color:white;
-border:none;
 padding:12px 20px;
 border-radius:8px;
 font-weight:bold;
-cursor:pointer;
 }
 
-.download-btn:hover{
-background:#059669;
-}
 </style>
-</head>
-<body>
 
 <div class="container">
 
 <h1>Admin Panel</h1>
-<a href="/download_registrations">
-    <button class="download-btn">Download Registrations Excel</button>
-</a>
 
+<div style="margin-bottom: 25px; display: flex; gap: 15px;">
+    <a href="/admin_analytics" style="text-decoration: none;">
+        <button style="background: linear-gradient(135deg, #10b981, #059669); font-weight: bold; font-size: 16px;">
+            📊 View Analytics Dashboard
+        </button>
+    </a>
+    <a href="/download_registrations">
+        <button class="download-btn">Download Registrations Excel</button>
+    </a>
+</div>
+
+<!-- ================= ADD EVENT ================= -->
 <h2>Add Event</h2>
 
-
-
 <form method="POST" action="/add_event" enctype="multipart/form-data">
-
 <input type="text" name="name" placeholder="Event Name" required>
-
 <textarea name="description" placeholder="Event Description" required></textarea>
 
-<input type="text" name="category" placeholder="Category" required>
+<select name="category" required>
+    <option value="" disabled selected>-- Select Category --</option>
+    <option value="Technical events">Technical Events</option>
+    <option value="FUN Games">FUN Games</option>
+    <option value="Seminars and Panel">Seminars and Panel</option>
+    <option value="Tech expo">Tech Expo</option>
+</select>
+
+<select name="event_type" required>
+    <option value="" disabled selected>-- Select Event Type --</option>
+    <option value="Individual">Individual Event</option>
+    <option value="Group">Group / Team Event</option>
+</select>
+
+<select name="department" required>
+    <option value="" disabled selected>-- Select Department --</option>
+    <option value="All Departments">All Departments</option>
+    <option value="IT">IT</option>
+    <option value="CSE(AIML)">CSE(AIML)</option>
+    <option value="Mechanical">Mechanical</option>
+    <option value="Electrical">Electrical</option>
+    <option value="ENTC">ENTC</option>
+    <option value="CSE(Cyber Security)">CSE(Cyber Security)</option>
+    <option value="CHEMICAL">CHEMICAL</option>
+</select>
+
+<select name="tech_fest_id">
+    <option value="" selected>-- No Tech Fest (Optional) --</option>
+    {% for t in tech_fests %}
+    <option value="{{t.id}}">{{t.name}} ({{t.department}})</option>
+    {% endfor %}
+</select>
 
 <input type="date" name="event_date" required>
-
 <input type="time" name="event_time" required>
-
 <input type="text" name="venue" placeholder="Venue" required>
-
+<input type="number" name="price" placeholder="Base Fee (₹) [0 for Free]" min="0" required>
 <input type="file" name="image" required>
-
 <button type="submit">Add Event</button>
-
 </form>
 
+<!-- ================= ADD TECH FEST ================= -->
+<h2>Add Tech Fest</h2>
+<form method="POST" action="/add_tech_fest" enctype="multipart/form-data">
+<input type="text" name="name" placeholder="Tech Fest Name" required>
+<select name="department" required>
+    <option value="" disabled selected>-- Select Department --</option>
+    <option value="All Departments">All Departments</option>
+    <option value="IT">IT</option>
+    <option value="CSE(AIML)">CSE(AIML)</option>
+    <option value="Mechanical">Mechanical</option>
+    <option value="Electrical">Electrical</option>
+    <option value="ENTC">ENTC</option>
+    <option value="CSE(Cyber Security)">CSE(Cyber Security)</option>
+    <option value="CHEMICAL">CHEMICAL</option>
+</select>
+<input type="date" name="fest_date" required>
+<input type="text" name="venue" placeholder="Venue" required>
+<div style="margin: 10px 0;">
+    <label>
+        <input type="checkbox" name="show_on_home" value="true"> Show on Homepage
+    </label>
+</div>
+<textarea name="description" placeholder="Tech Fest Description" required></textarea>
+<input type="file" name="image" required>
+<button type="submit">Add Tech Fest</button>
+</form>
 
+<!-- ================= ADD COMPETITION ================= -->
+<h2>Add Competition</h2>
+<form method="POST" action="/add_competition" enctype="multipart/form-data">
+<input type="text" name="name" placeholder="Competition Name" required>
+<select name="type" required>
+    <option value="" disabled selected>-- Select Type --</option>
+    <option value="Techverse Hackathon">Techverse Hackathon</option>
+    <option value="Fun Games">Fun Games</option>
+    <option value="Seminars">Seminars</option>
+    <option value="Other">Other</option>
+</select>
+<input type="date" name="competition_date" required>
+<input type="text" name="venue" placeholder="Venue" required>
+<textarea name="description" placeholder="Competition Description" required></textarea>
+<input type="file" name="image" required>
+<button type="submit">Add Competition</button>
+</form>
 
-
+<!-- ================= ADD CATEGORY ================= -->
 <h2>Add Category</h2>
 
 <form method="POST" action="/add_category">
-
 <select name="event_id">
-
 {% for e in events %}
-
 <option value="{{e.id}}">{{e.name}}</option>
-
 {% endfor %}
-
 </select>
 
 <input type="text" name="category_name" placeholder="Category Name">
-
 <button type="submit">Add Category</button>
 
 </form>
 
+<!-- ================= EVENTS TABLE ================= -->
 <h2>Events</h2>
 
 <table>
-
 <tr>
 <th>ID</th>
 <th>Name</th>
 <th>Date</th>
 <th>Venue</th>
+<th>Description & Details</th>
 <th>Action</th>
 </tr>
 
 {% for e in events %}
-
 <tr>
-
 <td>{{e.id}}</td>
 <td>{{e.name}}</td>
 <td>{{e.event_date}}</td>
 <td>{{e.venue}}</td>
-
-<td>
-
-<a href="/delete_event/{{e.id}}">
-<button class="delete">Delete</button>
-</a>
-
+<td style="max-width:300px;">
+  <strong style="color:#6c63ff;">{{e.category}}</strong> / {{e.department}}<br>
+  {% if e.tech_fest_id %}
+  <span style="font-size:0.8rem; background:#e0e7ff; color:#4338ca; padding:2px 6px; border-radius:4px; margin-right:5px;">Tech Fest ID: {{e.tech_fest_id}}</span>
+  {% endif %}
+  <span style="font-size:0.85rem; color:#666; display:inline-block; margin-top:5px;">{{e.description}}</span>
 </td>
-
+<td style="display: flex; gap: 10px;">
+<a href="/edit_event/{{e.id}}">
+<button style="background:linear-gradient(135deg,#f59e0b,#d97706); padding:8px 14px; border-radius:6px; font-size:14px; border:none; color:white; cursor:pointer;">Edit</button>
+</a>
+<a href="/request_event_feedback/{{e.id}}">
+<button style="background:linear-gradient(135deg,#10b981,#059669); padding:8px 14px; border-radius:6px; font-size:14px; border:none; color:white; cursor:pointer;">Ask Feedback</button>
+</a>
+<a href="/delete_event/{{e.id}}">
+<button class="delete" style="font-size:14px; border:none; color:white; cursor:pointer;">Delete</button>
+</a>
+</td>
 </tr>
-
 {% endfor %}
-
 </table>
 
+<!-- ================= TECH FESTS TABLE ================= -->
+<h2>Tech Fests</h2>
+
+<table>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Department</th>
+<th>Date</th>
+<th>Venue</th>
+<th>Action</th>
+</tr>
+
+{% for fest in tech_fests %}
+<tr>
+<td>{{fest.id}}</td>
+<td>{{fest.name}}</td>
+<td>{{fest.department}}</td>
+<td>{{fest.fest_date}}</td>
+<td>{{fest.venue}}</td>
+<td style="display: flex; gap: 10px;">
+<a href="/add_sub_event/{{fest.id}}">
+<button style="background:linear-gradient(135deg,#3b82f6,#2563eb); padding:8px 14px; border-radius:6px; font-size:14px; border:none; color:white; cursor:pointer;">Add Sub-Event</button>
+</a>
+<a href="/edit_tech_fest/{{fest.id}}">
+<button style="background:linear-gradient(135deg,#f59e0b,#d97706); padding:8px 14px; border-radius:6px; font-size:14px; border:none; color:white; cursor:pointer;">Edit</button>
+</a>
+<a href="/delete_tech_fest/{{fest.id}}">
+<button class="delete" style="font-size:14px; border:none; color:white; cursor:pointer;">Delete</button>
+</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+<!-- ================= COMPETITIONS TABLE ================= -->
+<h2>Competitions</h2>
+
+<table>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Type</th>
+<th>Date</th>
+<th>Venue</th>
+<th>Action</th>
+</tr>
+
+{% for comp in competitions %}
+<tr>
+<td>{{comp.id}}</td>
+<td>{{comp.name}}</td>
+<td>{{comp.type}}</td>
+<td>{{comp.competition_date}}</td>
+<td>{{comp.venue}}</td>
+<td>
+<a href="/delete_competition/{{comp.id}}">
+<button class="delete">Delete</button>
+</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Event Categories</h2>
+
+<table>
+<tr>
+    <th>ID</th>
+    <th>Event</th>
+    <th>Category</th>
+    <th>Action</th>
+</tr>
+
+{% for c in categories %}
+<tr>
+    <td>{{ c.id }}</td>
+    <td>{{ c.event_name }}</td>
+    <td>{{ c.category_name }}</td>
+    <td>
+        <a href="/delete_category/{{ c.id }}">
+            <button class="delete">Delete</button>
+        </a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+<!-- ================= REGISTERED USERS ================= -->
 <h2>Registered Users</h2>
 
 <table>
-
 <tr>
 <th>Name</th>
 <th>Email</th>
@@ -249,27 +383,51 @@ background:#059669;
 <th>Action</th>
 </tr>
 
-{% for u in users %}
-
+{% for user in users %}
 <tr>
-
-<td>{{u.name}}</td>
-<td>{{u.email}}</td>
-<td>{{u.event_name}}</td>
-<td>{{u.category_name}}</td>
-
+<td>{{user.name}}</td>
+<td>{{user.email}}</td>
+<td>{{user.event_name}}</td>
+<td>{{user.category_name}}</td>
 <td>
-
-<a href="/delete_user/{{u.id}}">
-<button class="delete">Delete</button>
-</a>
-
+<button class="delete" onclick="confirmDeleteUser({{user.id}})">Delete</button>
 </td>
+</tr>
+{% endfor %}
+</table>
 
+<script>
+function confirmDeleteUser(userId) {
+    let reason = prompt("Please provide a reason for deleting this registration:");
+    if (reason !== null && reason.trim() !== "") {
+        window.location.href = "/delete_user/" + userId + "?reason=" + encodeURIComponent(reason);
+    } else if (reason !== null) {
+        alert("A reason is required to delete a user.");
+    }
+}
+</script>
+
+<!-- ================= SYSTEM USERS ================= -->
+<h2>Registered System Users</h2>
+
+<table>
+<tr>
+<th>Username</th>
+<th>Last Login Time</th>
+<th>Action</th>
 </tr>
 
+{% for u in system_users %}
+<tr>
+<td>{{ u.username }}</td>
+<td>{{ u.last_login if u.last_login else 'Never logged in' }}</td>
+<td>
+    <form action="/admin/remove_system_user/{{ u.id }}" method="POST" style="display:inline;" onsubmit="return confirm('WARNING: This will permanently delete this user account. proceed?');">
+        <button type="submit" class="delete" style="font-size:14px; border:none; color:white; cursor:pointer;">Delete Account</button>
+    </form>
+</td>
+</tr>
 {% endfor %}
-
 </table>
 
 </div>

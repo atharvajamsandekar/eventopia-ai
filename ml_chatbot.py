@@ -1,52 +1,62 @@
 import json
-import random
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
 
-# Load intents file
+# -------------------------
+# LOAD INTENTS
+# -------------------------
+
 with open("intents.json") as file:
     data = json.load(file)
 
 patterns = []
 tags = []
 
-# Prepare training data
+# -------------------------
+# PREPARE TRAINING DATA
+# -------------------------
+
 for intent in data["intents"]:
+
     for pattern in intent["patterns"]:
+
         patterns.append(pattern)
         tags.append(intent["tag"])
 
-# Convert text to numbers
+
+# -------------------------
+# TEXT VECTORISER
+# -------------------------
+
 vectorizer = TfidfVectorizer()
+
 X = vectorizer.fit_transform(patterns)
 
-# Train model
-model = LogisticRegression()
+
+# -------------------------
+# TRAIN MODEL
+# -------------------------
+
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+
 model.fit(X, tags)
 
 
-# Predict intent
+# -------------------------
+# INTENT PREDICTION
+# -------------------------
+
 def predict_intent(user_input):
+
+    user_input = user_input.lower()
+
     input_vector = vectorizer.transform([user_input])
-    prediction = model.predict(input_vector)[0]
-    return prediction
 
+    probabilities = model.predict_proba(input_vector)[0]
+    best_index = np.argmax(probabilities)
+    confidence = probabilities[best_index]
+    
+    prediction = model.classes_[best_index]
 
-# Generate response
-def get_ml_response(user_input, username):
-
-    message = user_input.lower()
-
-    # greeting
-    if "hello" in message or "hi" in message:
-        return f"Hello {username}! I am your event assistant."
-
-    # who is using system
-    if "who is using the system" in message or "who am i" in message:
-        return f"You are logged in as {username}."
-
-    # event question
-    if "events" in message:
-        return "I can show you available events."
-
-    return "Ask me about events, fees or registration."
+    return prediction, confidence

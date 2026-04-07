@@ -1,91 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Eventopia | College Event Portal</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventopia | College Event Portal</title>
+    <!-- Modern Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
 
 <nav>
-  <div style="display:flex;align-items:center;gap:15px;">
-    <h2 style="margin:0;">Eventhopia</h2>
-    {% if username %}
-    <span style="font-weight:bold;">👤{{username}}</span>
-    {% endif %}
-    
+  <div class="brand">
+    <a href="/" style="text-decoration: none;"><h2>Eventopia</h2></a>
   </div>
   
   <ul>
-    <li><a href="{{ url_for('home') }}">Home</a></li>
-    <li><a href="/events">Events</a></li>
-
-    {% if session.get('user') %}
-        
-        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    {% if session.get('admin') %}
+        <li><a href="/admin"><i class="fa-solid fa-lock" style="color:#ef4444;"></i> Admin</a></li>
+        <li><a href="/admin_logout"><i class="fa-solid fa-right-from-bracket" style="color:#ef4444;"></i> Logout</a></li>
     {% else %}
+        <li><a href="{{ url_for('home') }}"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="/events"><i class="fa-solid fa-calendar-days"></i> Events</a></li>
+        <li><a href="/notifications"><i class="fa-solid fa-bell"></i> Notifications <span id="notifBadge" style="display:none; background:#ef4444; color:white; border-radius:50px; padding:2px 6px; font-size:0.7rem; font-weight:bold; margin-left:5px;">0</span></a></li>
+        <li><a href="/feedback"><i class="fa-solid fa-comment-dots"></i> Feedback</a></li>
+
+        {% if session.get('user') %}
+            <li class="user-badge"><a href="{{ url_for('profile') }}" style="color:var(--accent-color); text-decoration:none;"><i class="fa-solid fa-user"></i> {{ session['user'] }}</a></li>
+            <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('register') }}" class="btn-primary" style="padding: 8px 16px;">Register</a></li>
+        {% endif %}
         
-        <li><a href="{{ url_for('register') }}">Register</a></li>
+        <li><a href="#" onclick="toggleAI()"><i class="fa-solid fa-robot" style="color:var(--accent-color);"></i> Ask AI</a></li>
+        <li><a href="#" id="themeToggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode"><i class="fa-solid fa-sun" id="themeIcon"></i></a></li>
     {% endif %}
-
-    <li><a href="/admin_login">Admin</a></li>
-    <li><a href="#" onclick="toggleAI()">AI Assistant</a></li>
-    <li><a href="/feedback">Feedback</a></li>
   </ul>
-
-  <img src="{{ url_for('static', filename='images/moon.png') }}" id="icon" alt="Theme Icon">
 </nav>
 
 {% block content %}{% endblock %}
+
+<!-- AI SIDEBAR -->
 <div class="ai-sidebar" id="aiSidebar">
     <div class="ai-header">
-        <h3>🤖 AI Assistant</h3>
-        <span onclick="toggleAI()">✖</span>
+        <h3><i class="fa-solid fa-robot"></i> AI Assistant</h3>
+        <span onclick="toggleAI()"><i class="fa-solid fa-xmark"></i></span>
     </div>
 
-    <div class="ai-messages" id="chatBox"></div>
+    <div class="ai-messages" id="chatBox">
+      <div class="ai-msg msg-bot">Hi there! Ask me about Eventopia events or any random question.</div>
+    </div>
 
     <div class="ai-input">
-        <input type="text" id="userInput" placeholder="Ask something...">
-        <button  type="button" onclick="sendMessage()">Send</button>
+        <input type="text" id="userInput" placeholder="Ask something..." onkeypress="handleKeyPress(event)">
+        <button type="button" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
 </div>
 
-
 <footer>
-  <footer>
-
-<div class="foot-panel">
-
-<ul>
-<h3>Eventopia</h3>
-<li>Your gateway to campus events.</li>
-</ul>
-
-<ul>
-<h3>Quick Links</h3>
-<li><a href="/">Home</a></li>
-<li><a href="/events">Events</a></li>
-<li><a href="/feedback">Feedback</a></li>
-</ul>
-
-<ul>
-<h3>College</h3>
-<li><a href="https://famt.ac.in/">About FAMT</a></li>
-<li><a href="#">Campus Map</a></li>
-</ul>
-
-</div>
-
-<p style="text-align:center;">© 2026 Eventopia</p>
-
+    <div class="foot-panel">
+        <ul>
+            <h3>Eventopia</h3>
+            <li style="color:var(--text-muted);"><i class="fa-solid fa-rocket"></i> Your gateway to campus events.</li>
+        </ul>
+        <ul>
+            <h3>Quick Links</h3>
+            <li><a href="/">Home</a></li>
+            <li><a href="/events">Events</a></li>
+            <li><a href="/admin_login">Admin Portal</a></li>
+        </ul>
+        <ul>
+            <h3>College Info</h3>
+            <li><a href="#">About Campus</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </div>
+    <p style="text-align:center; color:var(--text-muted); font-size: 0.9rem;">© 2026 Eventopia. <i class="fa-solid fa-heart" style="color:var(--accent-color);"></i> Engineered for students.</p>
 </footer>
 
-</footer>
 <script>
 function toggleAI() {
     document.getElementById("aiSidebar").classList.toggle("active");
+    if(document.getElementById("aiSidebar").classList.contains("active")) {
+        document.getElementById("userInput").focus();
+    }
+}
+
+function handleKeyPress(e) {
+    if(e.key === "Enter") {
+        sendMessage();
+    }
 }
 
 function sendMessage() {
@@ -94,36 +101,148 @@ function sendMessage() {
 
     if(message.trim() === "") return;
 
-    console.log("Sending:", message);
+    let chatBox = document.getElementById("chatBox");
+    // Append user message
+    chatBox.innerHTML += `<div class="ai-msg msg-user">${message}</div>`;
+    input.value = "";
+    
+    // Auto scroll to bottom
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Show typing indicator
+    let typingId = 'typing-' + Date.now();
+    chatBox.innerHTML += `<div class="ai-msg msg-bot" id="${typingId}"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
 
     fetch("/ask_ai", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: message })
     })
-    .then(response => {
-        console.log("Raw response:", response);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log("Server data:", data);
+        document.getElementById(typingId).remove();
+        let botResponse = data.response;
+        
+        if (botResponse.trim() === "[NAVIGATE_HOME]") {
+            window.location.href = "/home";
+            return;
+        }
 
-        let chatBox = document.getElementById("chatBox");
+        if (botResponse.trim().startsWith("[CREATE_NOTIFICATION]")) {
+            let payload = botResponse.replace("[CREATE_NOTIFICATION]", "").trim();
+            let parts = payload.split("|");
+            let title = parts[0] ? parts[0].trim() : "AI Announcement";
+            let msg = parts[1] ? parts[1].trim() : payload;
+            
+            fetch("/api/add_notification", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: title, message: msg })
+            }).then(() => {
+                chatBox.innerHTML += `<div class="ai-msg msg-bot">✅ Notification manually broadcasted to the platform!</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+                showToast(title, msg);
+            });
+            return;
+        }
 
-        chatBox.innerHTML += "<p><b>You:</b> " + message + "</p>";
-        chatBox.innerHTML += "<p><b>AI:</b> " + data.response + "</p>";
-
-        input.value = "";
+        chatBox.innerHTML += `<div class="ai-msg msg-bot">${botResponse}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
     })
     .catch(error => {
-        console.error("Fetch error:", error);
+        document.getElementById(typingId).remove();
+        chatBox.innerHTML += `<div class="ai-msg msg-bot" style="color:#ef4444;">Sorry, connection failed.</div>`;
     });
 }
-</script>
 
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+// ==========================
+// TOAST NOTIFICATIONS
+// ==========================
+function showToast(title, message) {
+    let container = document.getElementById("toastContainer");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toastContainer";
+        container.style.position = "fixed";
+        container.style.top = "20px";
+        container.style.right = "20px";
+        container.style.zIndex = "9999";
+        container.style.display = "flex";
+        container.style.flexDirection = "column";
+        container.style.gap = "10px";
+        document.body.appendChild(container);
+    }
+    
+    let toast = document.createElement("div");
+    toast.style.background = "var(--glass-bg, rgba(255,255,255,0.1))";
+    toast.style.backdropFilter = "blur(10px)";
+    toast.style.border = "1px solid var(--accent-color, #3b82f6)";
+    toast.style.padding = "15px 20px";
+    toast.style.borderRadius = "10px";
+    toast.style.color = "var(--text-main, #fff)";
+    toast.style.boxShadow = "0 4px 15px rgba(0,0,0,0.3)";
+    toast.style.transform = "translateX(120%)";
+    toast.style.transition = "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+    toast.style.maxWidth = "350px";
+    toast.innerHTML = `<strong style="font-size:1.05rem;"><i class="fa-solid fa-bell" style="color:#facc15; margin-right:8px;"></i>${title}</strong><p style="margin:6px 0 0; font-size:0.9rem; color:var(--text-muted, #ccc); line-height:1.4;">${message}</p>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => { toast.style.transform = "translateX(0)"; }, 10);
+    setTimeout(() => { 
+        toast.style.transform = "translateX(120%)"; 
+        setTimeout(() => toast.remove(), 400);
+    }, 6000);
+}
+
+// Fetch latest notification on page load
+document.addEventListener("DOMContentLoaded", () => {
+    // Theme setup
+    if(localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-theme');
+        document.getElementById('themeIcon').classList.replace('fa-sun', 'fa-moon');
+    }
+
+    // Check for toast notifications
+    fetch("/api/latest_notification")
+    .then(r => r.json())
+    .then(data => {
+        if(data && data.title) {
+            let lastSeen = sessionStorage.getItem("last_notif_id");
+            if (lastSeen != data.id) {
+                setTimeout(() => showToast(data.title, data.message), 1000);
+                sessionStorage.setItem("last_notif_id", data.id);
+            }
+        }
+    }).catch(e => console.log("No new notifications"));
+
+    // Check total notifications count
+    fetch("/api/unread_notifications_count")
+    .then(r => r.json())
+    .then(data => {
+        if(data && data.count > 0) {
+            let badge = document.getElementById("notifBadge");
+            if (badge) {
+                badge.innerText = data.count > 99 ? "99+" : data.count;
+                badge.style.display = "inline-block";
+            }
+        }
+    }).catch(e => console.log("No notification count"));
+});
+
+function toggleTheme() {
+    let isLight = document.body.classList.toggle('light-theme');
+    let icon = document.getElementById('themeIcon');
+    if (isLight) {
+        icon.classList.replace('fa-sun', 'fa-moon');
+        localStorage.setItem('theme', 'light');
+    } else {
+        icon.classList.replace('fa-moon', 'fa-sun');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+</script>
 
 </body>
 </html>

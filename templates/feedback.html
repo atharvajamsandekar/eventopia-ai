@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section style="max-width: 600px; margin: 40px auto; padding: 20px;">
+    <div style="background: var(--glass-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border); text-align: center;">
+        <h2 style="margin-top:0;"><i class="fa-solid fa-comment-dots" style="color:var(--accent-color);"></i> Provide Feedback</h2>
+        <p style="color: var(--text-muted); margin-bottom:30px;">Help us improve Eventopia by sharing your thoughts on events you've attended.</p>
+        
+        {% if success %}
+        <div style="background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; color: #4ade80; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <i class="fa-solid fa-check-circle"></i> Thank you! Your feedback has been recorded and an email confirmation sent.
+        </div>
+        {% endif %}
+
+        {% if attended_events %}
+        <form method="POST" action="/feedback" style="display:flex; flex-direction:column; gap:20px;">
+            <div style="text-align:left;">
+                <label style="color:var(--text-muted); font-size:0.9rem;">Select Event</label>
+                <select name="event_id" required style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px;">
+                    <option value="" disabled selected>-- Choose an Event --</option>
+                    {% for event in attended_events %}
+                    <option value="{{ event.id }}" style="color: black;">{{ event.name }} ({{ event.event_date }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="text-align:left;">
+                <label style="color:var(--text-muted); font-size:0.9rem;">1. Please rate the overall event <span style="color:#ef4444;">*</span></label>
+                <select name="overall_rating" required style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px; margin-bottom:15px;">
+                    <option value="" disabled selected>-- Select Rating --</option>
+                    <option value="5" style="color: black;">⭐⭐⭐⭐⭐ - Excellent</option>
+                    <option value="4" style="color: black;">⭐⭐⭐⭐ - Very Good</option>
+                    <option value="3" style="color: black;">⭐⭐⭐ - Good</option>
+                    <option value="2" style="color: black;">⭐⭐ - Fair</option>
+                    <option value="1" style="color: black;">⭐ - Poor</option>
+                </select>
+
+                <label style="color:var(--text-muted); font-size:0.9rem;">2. Rate the organization and flow <span style="color:#ef4444;">*</span></label>
+                <select name="org_rating" required style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px; margin-bottom:15px;">
+                    <option value="" disabled selected>-- Select Rating --</option>
+                    <option value="5" style="color: black;">5 - Perfectly smooth</option>
+                    <option value="4" style="color: black;">4 - Minor hiccups</option>
+                    <option value="3" style="color: black;">3 - Average</option>
+                    <option value="2" style="color: black;">2 - Disorganized</option>
+                    <option value="1" style="color: black;">1 - Chaos</option>
+                </select>
+
+                <label style="color:var(--text-muted); font-size:0.9rem;">3. Rate the speaker/content quality <span style="color:#ef4444;">*</span></label>
+                <select name="content_rating" required style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px; margin-bottom:15px;">
+                    <option value="" disabled selected>-- Select Rating --</option>
+                    <option value="5" style="color: black;">5 - Extremely insightful</option>
+                    <option value="4" style="color: black;">4 - Very informative</option>
+                    <option value="3" style="color: black;">3 - Adequate</option>
+                    <option value="2" style="color: black;">2 - Below expectations</option>
+                    <option value="1" style="color: black;">1 - Not useful</option>
+                </select>
+
+                <label style="color:var(--text-muted); font-size:0.9rem;">4. Rate the venue & facilities <span style="color:#ef4444;">*</span></label>
+                <select name="venue_rating" required style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px; margin-bottom:15px;">
+                    <option value="" disabled selected>-- Select Rating --</option>
+                    <option value="5" style="color: black;">5 - Excellent</option>
+                    <option value="4" style="color: black;">4 - Good</option>
+                    <option value="3" style="color: black;">3 - Satisfactory</option>
+                    <option value="2" style="color: black;">2 - Needs improvement</option>
+                    <option value="1" style="color: black;">1 - Very poor</option>
+                </select>
+
+                <label style="color:var(--text-muted); font-size:0.9rem;">5. Would you recommend this event? <span style="color:#ef4444;">*</span></label>
+                <select name="recommend" required style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px; margin-bottom:15px;">
+                    <option value="" disabled selected>-- Select --</option>
+                    <option value="Yes" style="color: black;">Yes, definitely</option>
+                    <option value="Maybe" style="color: black;">Maybe</option>
+                    <option value="No" style="color: black;">No</option>
+                </select>
+
+                <label style="color:var(--text-muted); font-size:0.9rem;">6. What did you like the most? <span style="color:#ef4444;">*</span></label>
+                <textarea name="liked_most" rows="2" required placeholder="Share your favorite moments..." style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px; margin-bottom:15px; resize:none;"></textarea>
+
+                <label style="color:var(--text-muted); font-size:0.9rem;">7. What could be improved? <span style="color:#ef4444;">*</span></label>
+                <textarea name="improvements" rows="2" required placeholder="Let us know what we can fix..." style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px; margin-bottom:15px; resize:none;"></textarea>
+
+                <label style="color:var(--text-muted); font-size:0.9rem;">8. Any other suggestions for future events? <span style="color:#ef4444;">*</span></label>
+                <textarea name="suggestions" rows="2" required placeholder="Any final thoughts?" style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; font-family:inherit; margin-top:5px; resize:none;"></textarea>
+            </div>
+            
+            <button type="submit" class="btn-primary" style="width:100%;">Submit Feedback</button>
+        </form>
+        {% else %}
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 10px;">
+            <i class="fa-solid fa-calendar-xmark" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 15px; display: block;"></i>
+            <h3 style="color: var(--text-main);">No Events Yet</h3>
+            <p style="color: var(--text-muted);">You need to register for an event before you can provide feedback for it.</p>
+            <a href="/events" class="btn-primary" style="display: inline-block; margin-top: 15px;">Browse Events</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

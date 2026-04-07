@@ -2,275 +2,288 @@
 
 {% block content %}
 
-<style>
-
-body{
-font-family:'Inter',sans-serif;
-}
-
-.events-hero{
-background:linear-gradient(135deg,#667eea,#764ba2);
-padding:110px 40px 80px;
-text-align:center;
-color:white;
-}
-
-.events-hero h1{
-font-size:3rem;
-margin-bottom:10px;
-}
-
-.filter-container{
-max-width:1200px;
-margin:-40px auto 40px;
-padding:25px;
-background:#ffffff;
-border-radius:15px;
-display:flex;
-gap:20px;
-flex-wrap:wrap;
-box-shadow:0 8px 20px rgba(0,0,0,0.1);
-}
-
-.filter-group{
-flex:1;
-min-width:200px;
-}
-
-.filter-group label{
-display:block;
-font-weight:600;
-margin-bottom:5px;
-}
-
-.filter-group select,
-.filter-group input{
-width:100%;
-padding:10px;
-border-radius:8px;
-border:1px solid #ddd;
-}
-
-.events-grid{
-max-width:1200px;
-margin:auto;
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-gap:30px;
-}
-
-.event-card{
-background:white;
-border-radius:15px;
-overflow:hidden;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
-transition:0.3s;
-}
-
-.event-card:hover{
-transform:translateY(-8px);
-box-shadow:0 15px 35px rgba(0,0,0,0.2);
-}
-
-.event-card img{
-width:100%;
-height:200px;
-object-fit:cover;
-}
-
-.event-content{
-padding:20px;
-}
-
-.event-meta{
-font-size:14px;
-color:#666;
-margin:10px 0;
-}
-
-.event-footer{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-top:15px;
-}
-
-.btn-register{
-background:#6c63ff;
-color:white;
-padding:8px 18px;
-border-radius:8px;
-text-decoration:none;
-font-size:14px;
-display:inline-block;
-}
-
-.btn-register:hover{
-background:#5147d8;
-}
-
-</style>
-
-
-<section class="events-hero">
-<h1>🎯 Discover Events</h1>
-<p>Find the perfect event that matches your interests</p>
+<section class="hero" style="padding: 60px 20px;">
+    <h1>🎯 Discover Events</h1>
+    <p>Find the perfect event that matches your interests and passion.</p>
 </section>
+
 
 
 <div class="filter-container">
-
-<div class="filter-group">
-<label>🔍 Search</label>
-<input type="text" id="searchFilter" placeholder="Search event">
+    <div class="filter-group">
+        <label><i class="fa-solid fa-magnifying-glass"></i> Search</label>
+        <input type="text" id="searchFilter" placeholder="Search event by name...">
+    </div>
+    
+    <div class="filter-group">
+        <label><i class="fa-solid fa-folder"></i> Category</label>
+        <select id="categoryFilter">
+            <option value="all">All Categories</option>
+            <option value="Technical events">Technical Events</option>
+            <option value="FUN Games">FUN Games</option>
+            <option value="Seminars and Panel">Seminars and Panel</option>
+            <option value="Tech expo">Tech Expo</option>
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label><i class="fa-solid fa-graduation-cap"></i> Department</label>
+        <select id="departmentFilter">
+            <option value="all">All Departments</option>
+            <option value="IT">IT</option>
+            <option value="CSE(AIML)">CSE(AIML)</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Electrical">Electrical</option>
+            <option value="ENTC">ENTC</option>
+            <option value="CSE(Cyber Security)">CSE(Cyber Security)</option>
+            <option value="CHEMICAL">CHEMICAL</option>
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label><i class="fa-regular fa-calendar-days"></i> Date Range</label>
+        <select id="dateFilter">
+            <option value="all">Any Date</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label><i class="fa-solid fa-indian-rupee-sign"></i> Price</label>
+        <select id="priceFilter">
+            <option value="all">Any Price</option>
+            <option value="free">Free</option>
+            <option value="paid">Paid</option>
+        </select>
+    </div>
 </div>
 
-<div class="filter-group">
-<label>📁 Category</label>
-<select id="categoryFilter">
-<option value="all">All</option>
-<option value="tech">Technology</option>
-<option value="art">Art</option>
-<option value="cultural">Cultural</option>
-<option value="sports">Sports</option>
-<option value="workshop">Workshop</option>
-</select>
-</div>
-<div class="filter-group">
-<label>📅 Date Range</label>
-<select id="dateFilter">
-<option value="all">All Dates</option>
-<option value="today">Today</option>
-<option value="week">This Week</option>
-<option value="month">This Month</option>
-</select>
-</div><div class="filter-group">
-<label>💰 Price</label>
-<select id="priceFilter">
-<option value="all">All Prices</option>
-<option value="free">Free</option>
-<option value="paid">Paid</option>
-</select>
-</div>
-
-</div>
-
-
-<section style="padding:40px 20px">
-
-<div class="events-grid" id="eventsGrid">
-
-{% for event in events %}
-
-<div class="event-card"
-data-name="{{event.name}}"
-data-category="{{event.category}}"
-data-date="{{event.event_date}}"
-data-price="{{event.price}}">
-
-{% if event.image %}
-<img src="{{ url_for('static', filename='uploads/' ~ event.image) }}">
-{% else %}
-<img src="{{ url_for('static', filename='uploads/default.jpg') }}">
-{% endif %}
-
-<div class="event-content">
-
-<h3>{{event.name}}</h3>
-
-<p>{{event.description}}</p>
-
-<div class="event-meta">
-📍 {{event.venue}} <br>
-📅 {{event.event_date}} <br>
-⏰ {{event.event_time}}
-</div>
-
-<div class="event-footer">
-
-<div>
-{% if event.price == 0 %}
-Free
-{% else %}
-₹{{event.price}}
-{% endif %}
-</div>
-
-<a href="/event_categories/{{event.id}}" class="btn-register">
-Register →
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
+<section style="padding:40px 0 80px 0;">
+    <div class="events-grid" id="eventsGrid">
+        {% for event in events %}
+        <div class="event-card"
+             data-name="{{event.name}}"
+             data-category="{{event.category}}"
+             data-department="{{event.department}}"
+             data-date="{{event.event_date}}"
+             data-price="{{event.price | default(0)}}">
+            
+            <div class="event-image">
+                {% if event.image %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ event.image) }}" alt="{{event.name}}">
+                {% else %}
+                    <!-- generic fallback based on category string if u wanted, but using unspash/default is fine -->
+                    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80" alt="Placeholder">
+                {% endif %}
+            </div>
+            
+            <div class="event-content">
+                <span class="event-category-badge badge-default">{{event.category}}</span>
+                <span class="event-category-badge" style="background:var(--glass-bg); border:1px solid var(--accent-color); color:var(--text-main);">{{event.department}}</span>
+                <h3>{{event.name}}</h3>
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border-left: 3px solid var(--accent-color); margin: 15px 0;">
+                    <p style="margin:0; font-style:italic; font-size: 0.95rem; color: #cbd5e1;">{{event.description}}</p>
+                </div>
+                
+                <div class="event-meta">
+                    <span><i class="fa-solid fa-location-dot" style="color:var(--accent-color);"></i> {{event.venue}}</span>
+                    <span><i class="fa-solid fa-calendar-days" style="color:var(--accent-color);"></i> {{event.event_date}} at {{event.event_time}}</span>
+                </div>
+                
+                <div class="event-footer">
+                    <span style="font-size:1.1rem; font-weight:800; color:var(--text-main);">
+                        {% if event.price == 0 %}
+                            Free
+                        {% else %}
+                            ₹{{event.price}}
+                        {% endif %}
+                    </span>
+                    <a href="/event_categories/{{event.id}}" class="btn-primary" style="padding:8px 16px; font-size:0.9rem;">
+                        Register <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </section>
 
+<!-- EXPERT TECH FESTS HIGHLIGHTS -->
+{% if tech_fests %}
+<style>
+.horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 20px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+}
+.horizontal-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+.horizontal-scroll .event-card-comp {
+    min-width: 320px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.event-card-comp .event-image { height: 180px; }
+.event-card-comp .event-image img { width: 100%; height: 100%; object-fit: cover; }
+.event-card-comp .event-content { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+.event-card-comp h3 { font-size: 1.25rem; margin: 15px 0 10px; color: var(--text-main); }
+.event-card-comp p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+</style>
+<div style="max-width: 1200px; margin: 0 auto;">
+    <h2 class="section-title" style="text-align:center; margin-bottom: 30px; font-size: 2rem; background: linear-gradient(90deg, #6c63ff, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent;">🔥 Department Tech Fests</h2>
+    <section class="horizontal-scroll" style="margin-bottom:60px; padding: 0 20px;">
+        {% for fest in tech_fests %}
+        <div class="event-card-comp" style="border-top: 4px solid #6c63ff;">
+            <div class="event-image">
+                {% if fest.image %}
+                <img src="{{ url_for('static', filename='uploads/' ~ fest.image) }}" alt="{{ fest.name }}">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80" alt="Placeholder">
+                {% endif %}
+            </div>
+            <div class="event-content">
+                <div>
+                    <span class="event-category-badge" style="background:var(--accent-color); color:white; padding:4px 10px; border-radius:20px; font-size:0.8rem; font-weight:bold;"><i class="fa-solid fa-microchip"></i> {{ fest.department }}</span>
+                </div>
+                <h3>{{ fest.name }}</h3>
+                <p>{{ fest.description }}</p>
+                <div class="event-meta" style="margin-top:auto; display:flex; gap:15px; color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">
+                    <span><i class="fa-solid fa-calendar-days"></i> {{ fest.fest_date }}</span>
+                    <span><i class="fa-solid fa-location-dot"></i> {{ fest.venue }}</span>
+                </div>
+                <a href="/techfest/{{ fest.id }}" class="btn-primary" style="text-align:center; padding: 10px; border-radius: 8px; text-decoration: none;">View Sub-Events <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+</div>
+{% endif %}
+
+<!-- EXPERT COMPETITIONS HIGHLIGHTS -->
+{% if competitions %}
+<style>
+.horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 20px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+}
+.horizontal-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+.horizontal-scroll .event-card-comp {
+    min-width: 320px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.event-card-comp .event-image { height: 180px; }
+.event-card-comp .event-image img { width: 100%; height: 100%; object-fit: cover; }
+.event-card-comp .event-content { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+.event-card-comp h3 { font-size: 1.25rem; margin: 15px 0 10px; color: var(--text-main); }
+.event-card-comp p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+</style>
+<h2 class="section-title" style="text-align:center; margin-bottom: 30px;">Competition Highlights</h2>
+<section class="horizontal-scroll" style="margin-bottom:60px; padding: 0 20px;">
+    {% for comp in competitions %}
+    <div class="event-card-comp">
+        <div class="event-image">
+            <img src="{{ url_for('static', filename='uploads/' + comp.image) if comp.image else 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixlib=rb-1.2.1&auto=format&fit=crop&q=80' }}" onerror="this.src='https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixlib=rb-1.2.1&auto=format&fit=crop&q=80'">
+        </div>
+        <div class="event-content">
+            <div>
+                <span class="event-category-badge badge-tech" style="background:var(--accent-color); color:white; padding:4px 10px; border-radius:20px; font-size:0.8rem; font-weight:bold;"><i class="fa-solid fa-trophy"></i> {{ comp.type }}</span>
+            </div>
+            <h3>{{ comp.name }}</h3>
+            <p>{{ comp.description }}</p>
+            <div class="event-meta" style="margin-top:auto; display:flex; gap:15px; color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">
+                <span><i class="fa-solid fa-calendar-days"></i> {{ comp.competition_date }}</span>
+                <span><i class="fa-solid fa-location-dot"></i> {{ comp.venue }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
 
 <script>
+const searchInput = document.getElementById("searchFilter");
+const categoryFilter = document.getElementById("categoryFilter");
+const departmentFilter = document.getElementById("departmentFilter");
+const dateFilter = document.getElementById("dateFilter");
+const priceFilter = document.getElementById("priceFilter");
 
-const searchInput=document.getElementById("searchFilter");
-const categoryFilter=document.getElementById("categoryFilter");
-const dateFilter=document.getElementById("dateFilter");
-const priceFilter=document.getElementById("priceFilter");
+searchInput.addEventListener("input", applyFilters);
+categoryFilter.addEventListener("change", applyFilters);
+departmentFilter.addEventListener("change", applyFilters);
+dateFilter.addEventListener("change", applyFilters);
+priceFilter.addEventListener("change", applyFilters);
 
-searchInput.addEventListener("input",applyFilters);
-categoryFilter.addEventListener("change",applyFilters);
-dateFilter.addEventListener("change",applyFilters);
-priceFilter.addEventListener("change",applyFilters);
+function applyFilters() {
+    const search = searchInput.value.toLowerCase();
+    const category = categoryFilter.value;
+    const department = departmentFilter.value;
+    const date = dateFilter.value;
+    const price = priceFilter.value;
 
-function applyFilters(){
+    const cards = document.querySelectorAll(".event-card");
 
-const search=searchInput.value.toLowerCase();
-const category=categoryFilter.value;
-const date=dateFilter.value;
-const price=priceFilter.value;
+    cards.forEach(card => {
+        let show = true;
+        
+        const name = card.dataset.name.toLowerCase();
+        const cat = (card.dataset.category || "").toLowerCase().trim();
+        const dep = (card.dataset.department || "").toLowerCase().trim();
+        const eventDate = new Date(card.dataset.date);
+        const eventPrice = parseInt(card.dataset.price) || 0;
+        const today = new Date();
 
-const cards=document.querySelectorAll(".event-card");
+        if (search && !name.includes(search)) show = false;
+        if (category !== "all" && cat !== category.toLowerCase().trim()) show = false;
+        if (department !== "all" && dep !== department.toLowerCase().trim()) show = false;
+        
+        if (price === "free" && eventPrice > 0) show = false;
+        if (price === "paid" && eventPrice === 0) show = false;
 
-cards.forEach(card=>{
+        if (date === "today") {
+            if (eventDate.toDateString() !== today.toDateString()) show = false;
+        }
 
-let show=true;
+        if (date === "week") {
+            const week = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            if (eventDate < today || eventDate > week) show = false;
+        }
 
-const name=card.dataset.name.toLowerCase();
-const cat=card.dataset.category;
-const eventDate=new Date(card.dataset.date);
-const eventPrice=parseInt(card.dataset.price);
+        if (date === "month") {
+            if (eventDate.getMonth() !== today.getMonth() || eventDate.getFullYear() !== today.getFullYear()) {
+                show = false;
+            }
+        }
 
-const today=new Date();
-
-if(search && !name.includes(search)) show=false;
-
-if(category!=="all" && cat!==category) show=false;
-
-if(price==="free" && eventPrice>0) show=false;
-if(price==="paid" && eventPrice===0) show=false;
-
-if(date==="today"){
-if(eventDate.toDateString()!==today.toDateString()) show=false;
+        card.style.display = show ? "flex" : "none";
+    });
 }
-
-if(date==="week"){
-const week=new Date(today.getTime()+7*24*60*60*1000);
-if(eventDate<today || eventDate>week) show=false;
-}
-
-if(date==="month"){
-if(eventDate.getMonth()!==today.getMonth()) show=false;
-}
-
-card.style.display=show?"block":"none";
-
-});
-
-}
-
 </script>
 
 {% endblock %}

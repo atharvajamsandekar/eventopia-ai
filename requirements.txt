@@ -4,3 +4,12 @@ pandas
 openpyxl
 scikit-learn
 gunicorn
+wikipedia
+google-generativeai
+python-dotenv
+twilio
+qrcode
+Pillow
+pymongo
+dnspython
+flask-pymongo

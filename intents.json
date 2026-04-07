@@ -37,10 +37,11 @@
  "tag":"event_details",
  "patterns":[
  "event details",
- "tell me about events",
- "where are events held",
- "when are events"
- ],
+ "tell me about event",
+ "event information",
+ "details about event"
+ ]
+,
  "responses":[
  "You can see the event details including date and venue on the events page.",
  "Each event has its own date and venue listed in the event section.",
@@ -74,6 +75,19 @@
 ],
 "responses":[
 "Let me check the categories for that event."
+]
+},
+{
+"tag":"greeting",
+"patterns":[
+"hello",
+"hi",
+"hey",
+"good morning",
+"good evening"
+],
+"responses":[
+"Hello! I am your Eventopia assistant."
 ]
 }
 

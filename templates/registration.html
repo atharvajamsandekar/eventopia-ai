@@ -4,47 +4,69 @@
 
 <style>
 
-.form-container{
-max-width:550px;
-margin:80px auto;
-background:white;
-padding:40px;
-border-radius:15px;
-box-shadow:0 15px 35px rgba(0,0,0,0.1);
+.form-container {
+    max-width: 550px;
+    margin: 80px auto;
+    background: var(--glass-bg, rgba(255,255,255,0.05));
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+    backdrop-filter: blur(10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
 
-.form-container h2{
-text-align:center;
-margin-bottom:25px;
-color:#4f46e5;
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--text-main, #fff);
 }
 
-.form-group{
-margin-bottom:15px;
+.form-group {
+    margin-bottom: 15px;
 }
 
 .form-group input,
-.form-group select{
-width:100%;
-padding:12px;
-border-radius:8px;
-border:1px solid #ddd;
-font-size:15px;
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+    font-size: 15px;
+    background: rgba(0,0,0,0.2);
+    color: var(--text-main, #fff);
+    transition: border 0.3s;
 }
 
-.btn-submit{
-width:100%;
-padding:12px;
-background:linear-gradient(90deg,#6366f1,#8b5cf6);
-color:white;
-border:none;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--accent-color, #6366f1);
 }
 
-.btn-submit:hover{
-opacity:0.9;
+.form-group input::placeholder {
+    color: var(--text-muted, #9ca3af);
+}
+
+.form-group select option {
+    background: #1e1e2d; /* dark background for options */
+    color: white;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, var(--accent-color, #6366f1), var(--accent-hover, #8b5cf6));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: opacity 0.3s;
+}
+
+.btn-submit:hover {
+    opacity: 0.9;
 }
 
 </style>
@@ -53,37 +75,67 @@ opacity:0.9;
 
 <h2>Register for {{category.category_name}}</h2>
 
-<form method="POST">
+{% if event.price and event.price > 0 %}
+<div style="background: rgba(79, 70, 229, 0.1); border: 1px solid #4f46e5; color: #a5b4fc; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+    <i class="fa-solid fa-indian-rupee-sign"></i> <b>Registration Fee: ₹{{ event.price }}</b> per person.<br>
+    <small>You will be redirected to the secure payment portal after submitting this form.</small>
+</div>
+{% endif %}
 
-<div class="form-group">
-<input type="text" name="name" placeholder="Full Name" required>
+{% if error %}
+<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+    <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+</div>
+{% endif %}
+
+<form method="POST" id="reg-form">
+
+{% if event.event_type == 'Group' %}
+<div class="form-group" id="team-name-group">
+    <label style="color:var(--text-main); font-weight:bold; margin-bottom:8px; display:block;">Team Name</label>
+    <input type="text" name="team_name" placeholder="Team Name (e.g., The Innovators)" required>
+</div>
+{% endif %}
+
+<div id="members-container">
+    <div class="member-card" style="background: rgba(0,0,0,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--glass-border);">
+        <h4 style="margin-top:0; color:var(--text-main);">Registrant Details {% if event.event_type == 'Group' %}(Team Leader){% endif %}</h4>
+        <div class="form-group"><input type="text" name="name[]" placeholder="Full Name" required></div>
+        <div class="form-group"><input type="email" name="email[]" placeholder="Email Address" required></div>
+        <div class="form-group"><input type="text" name="phone[]" placeholder="Phone Number" required></div>
+        <div class="form-group"><input type="text" name="branch[]" placeholder="Branch (CSE, IT, EXTC)" required></div>
+        <div class="form-group">
+            <select name="class[]" required>
+                <option value="">Select Class</option>
+                <option value="FY">First Year</option>
+                <option value="SY">Second Year</option>
+                <option value="TY">Third Year</option>
+                <option value="BE">Final Year</option>
+            </select>
+        </div>
+    </div>
 </div>
 
-<div class="form-group">
-<input type="email" name="email" placeholder="Email Address" required>
-</div>
+{% if event.event_type == 'Group' %}
+<button type="button" id="add-member-btn" onclick="addMember()" style="background:transparent; border:1px dashed var(--accent-color); color:var(--accent-color); width:100%; padding:10px; border-radius:8px; cursor:pointer; margin-bottom:15px; font-weight:bold;">+ Add Team Member</button>
+{% endif %}
 
-<div class="form-group">
-<input type="text" name="phone" placeholder="Phone Number" required>
-</div>
-
-<div class="form-group">
-<input type="text" name="branch" placeholder="Branch (CSE, IT, EXTC)" required>
-</div>
-
-<div class="form-group">
-<select name="class" required>
-<option value="">Select Class</option>
-<option value="FY">First Year</option>
-<option value="SY">Second Year</option>
-<option value="TY">Third Year</option>
-<option value="BE">Final Year</option>
-</select>
-</div>
-
-<button type="submit" class="btn-submit">Submit Registration</button>
+<button type="submit" class="btn-submit">
+    {% if event.price and event.price > 0 %}Proceed to Payment <i class="fa-solid fa-arrow-right"></i>{% else %}Submit Registration{% endif %}
+</button>
 
 </form>
+
+<script>
+function addMember() {
+    const container = document.getElementById('members-container');
+    const firstCard = container.firstElementChild.cloneNode(true);
+    firstCard.querySelector('h4').innerText = 'Team Member Details';
+    const inputs = firstCard.querySelectorAll('input, select');
+    inputs.forEach(i => i.value = '');
+    container.appendChild(firstCard);
+}
+</script>
 
 </div>
 

@@ -1,32 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Register - Eventopia</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-<nav>
-  <h2>Eventopia</h2>
-  <ul>
-    <li><a href="{{ url_for('home') }}">Home</a></li>
-    <li><a href="{{ url_for('login') }}">Login</a></li>
-  </ul>
-</nav>
+{% block content %}
+<div class="auth-container" style="max-width:450px; margin: 80px auto; padding: 40px; text-align:center;">
+    <h2 style="font-size:2rem; margin-bottom: 25px;"><i class="fa-solid fa-user-plus" style="font-size:1.5rem; margin-right:10px; color:var(--accent-color);"></i>Create Account</h2>
 
-<div class="auth-container">
-  <h2>Register</h2>
-  {% if error %}
-  <p style="color:red">{{ error }}</p>
-  {% endif %}
-  <form method="POST">
-    <input type="text" name="username" placeholder="Username" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
-    <button type="submit">Register</button>
-  </form>
-  <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    {% if error %}
+        <div style="background:rgba(239,68,68,0.1); border:1px solid #ef4444; color:#fca5a5; padding:10px; border-radius:10px; margin-bottom:20px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST" style="display:flex; flex-direction:column; gap:15px;">
+        <div style="position:relative;">
+            <i class="fa-solid fa-user" style="position:absolute; left:15px; top:15px; color:var(--text-muted);"></i>
+            <input type="text" name="username" placeholder="Choose a Username" required style="width:100%; padding:12px 15px 12px 45px; background:rgba(0,0,0,0.2); border:1px solid var(--glass-border); color:white; border-radius:10px; outline:none; transition:border 0.3s;" onfocus="this.style.borderColor='var(--accent-color)'" onblur="this.style.borderColor='var(--glass-border)'">
+        </div>
+        
+        <div style="position:relative;">
+            <i class="fa-solid fa-lock" style="position:absolute; left:15px; top:15px; color:var(--text-muted);"></i>
+            <input type="password" name="password" placeholder="Create a Password" required style="width:100%; padding:12px 15px 12px 45px; background:rgba(0,0,0,0.2); border:1px solid var(--glass-border); color:white; border-radius:10px; outline:none; transition:border 0.3s;" onfocus="this.style.borderColor='var(--accent-color)'" onblur="this.style.borderColor='var(--glass-border)'">
+        </div>
+        
+        <button type="submit" class="btn-primary" style="margin-top:10px; padding:14px; font-size:1.1rem; border-radius:10px; width:100%;">
+            Register Account <i class="fa-solid fa-user-check"></i>
+        </button>
+    </form>
+
+    <div style="margin-top:25px; color:var(--text-muted); font-size:0.9rem;">
+        <p>Aleady a member? <br> <a href="{{ url_for('login') }}" style="color:var(--accent-color); text-decoration:none; font-weight:bold; margin-top:5px; display:inline-block;">Log back in</a></p>
+    </div>
 </div>
-
-
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    <h2 class="section-title" style="text-align:left; margin-bottom:30px;"><i class="fa-solid fa-bell"></i> Notifications</h2>
+    
+    <div style="display:flex; flex-direction:column; gap:20px;">
+    {% if notifications %}
+        {% for notif in notifications %}
+        <div style="background: var(--glass-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--glass-border); border-left: 4px solid var(--accent-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin: 0;">{{ notif.title }}</h3>
+                <span style="font-size:0.8rem; color:var(--text-muted);"><i class="fa-regular fa-clock"></i> {{ notif.created_at }}</span>
+            </div>
+            <p style="margin-top:10px; color:var(--text-muted); margin-bottom:0;">{{ notif.message }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.2); border-radius: 15px; border: 1px dashed var(--glass-border);">
+            <i class="fa-regular fa-bell-slash" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+            <h3 style="color: var(--text-muted);">You're all caught up! No recent notifications.</h3>
+        </div>
+    {% endif %}
+    </div>
+</section>
+{% endblock %}

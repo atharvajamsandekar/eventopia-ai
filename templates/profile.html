@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero" style="padding: 60px 20px; text-align: left; max-width: 1200px; margin: 0 auto; background: transparent;">
+    <div style="background: var(--glass-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; align-items: center; gap: 30px; flex-wrap: wrap;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--gradient-main); display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div style="flex: 1; min-width: 250px;">
+            <h1 style="margin: 0; font-size: 2.5rem;">Hello, <span class="gradient-text">{{ username }}</span></h1>
+            <p style="margin-top: 5px; color: var(--text-muted); font-size: 1.1rem;">Welcome to your Eventopia dashboard.</p>
+        </div>
+        <div style="text-align: right; background: rgba(0,0,0,0.1); padding: 20px 30px; border-radius: 15px; border: 1px solid var(--accent-color); min-width: 200px;">
+            <div style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Campus Rank #{{ user_rank }}</div>
+            <div style="font-size: 2.5rem; font-weight: 800; color: #4ade80;">{{ points }} <span style="font-size: 1rem; color: var(--text-main);">pts</span></div>
+            <div style="margin-top: 5px; font-weight: bold; background: rgba(99, 102, 241, 0.2); color: #818cf8; padding: 5px 15px; border-radius: 20px; display: inline-block;">{{ badge }}</div>
+        </div>
+    </div>
+</section>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <h2 class="section-title" style="text-align: left; margin-top: 20px;"><i class="fa-solid fa-ticket"></i> Your Registered Events</h2>
+    
+    {% if registrations %}
+        <div class="events-grid" style="padding: 0; margin: 0;">
+            {% for reg in registrations %}
+            <div class="event-card" style="padding: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <h3 style="margin-top: 0;">{{ reg.event_name }}</h3>
+                        <p style="color: var(--text-muted);"><i class="fa-solid fa-tags"></i> Category: <span style="color:white; font-weight:bold;">{{ reg.category_name }}</span></p>
+                        <div class="event-meta" style="margin-bottom: 0;">
+                            <span><i class="fa-solid fa-location-dot" style="color:var(--accent-color);"></i> {{ reg.venue }}</span>
+                            <span><i class="fa-solid fa-calendar-days" style="color:var(--accent-color);"></i> {{ reg.event_date }}</span>
+                            {% if reg.price and reg.price > 0 %}
+                            <br>
+                            <span style="display:inline-block; margin-top:5px;"><i class="fa-solid fa-indian-rupee-sign" style="color:var(--accent-color);"></i> ₹{{ reg.price }}</span>
+                            <span style="display:inline-block; margin-top:5px; margin-left:15px; color: {% if reg.payment_status == 'Completed' %}#4ade80{% else %}#facc15{% endif %};">
+                                <i class="fa-solid fa-credit-card"></i> Payment: {{ reg.payment_status }}
+                            </span>
+                            {% if reg.transaction_id %}
+                            <span style="display:inline-block; margin-top:5px; margin-left:15px; font-family: monospace; font-size: 0.85em; color: var(--text-muted);">
+                                UTR: {{ reg.transaction_id }}
+                            </span>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if reg.ticket_id %}
+                    <div style="text-align: center; background: white; padding: 5px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <img src="/static/tickets/{{ reg.ticket_id }}.png" alt="QR" style="width: 80px; height: 80px;">
+                        <div style="font-size: 10px; color: #333; font-family: monospace; font-weight: bold;">{{ reg.ticket_id }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <span style="color: #4ade80; font-weight: bold;">
+                        <i class="fa-solid fa-circle-check"></i> 
+                        {% if reg.status == 'Attended' %} Event Attended {% else %} Registration Confirmed {% endif %}
+                    </span>
+                    <form method="POST" action="/cancel_registration/{{ reg.reg_id }}" onsubmit="return confirm('Are you sure you want to cancel your registration for {{ reg.event_name }}?');">
+                        <button type="submit" style="background:#ef4444; color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold; font-size: 0.9rem; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px; background: rgba(0,0,0,0.2); border-radius: 20px; border: 1px dashed var(--glass-border);">
+            <i class="fa-regular fa-face-frown" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+            <h3 style="color: var(--text-muted);">You haven't registered for any events yet.</h3>
+            <a href="/events" class="btn-primary" style="margin-top: 15px;">Browse Events</a>
+        </div>
+    {% endif %}
+</section>
+</section>
+
+<!-- SYSTEM CALENDAR -->
+<section style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+    <h2 class="section-title" style="text-align: left; margin-bottom: 20px;"><i class="fa-regular fa-calendar"></i> Campus Calendar</h2>
+    <div style="display:flex; gap:15px; margin-bottom:15px;">
+        <span style="display:flex; align-items:center; gap:5px; font-weight:bold; color:var(--text-main);"><span style="display:inline-block; width:15px; height:15px; background:#4f46e5; border-radius:3px;"></span> Available Events</span>
+        <span style="display:flex; align-items:center; gap:5px; font-weight:bold; color:var(--text-main);"><span style="display:inline-block; width:15px; height:15px; background:#10b981; border-radius:3px;"></span> Registered Events</span>
+    </div>
+    <div id="calendar" style="background:var(--glass-bg); padding:20px; border-radius:20px; border:1px solid var(--glass-border); color:var(--text-main); box-shadow:0 15px 35px rgba(0,0,0,0.1);"></div>
+</section>
+
+<!-- CALENDAR MODAL -->
+<div id="calendar-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background: #1e1e2d; padding:30px; border-radius:20px; max-width:500px; width:90%; border:1px solid rgba(255,255,255,0.1); box-shadow:0 25px 50px rgba(0,0,0,0.5);">
+        <h2 id="modal-title" style="margin-top:0; color:#fff;"></h2>
+        <div id="modal-status" style="margin-bottom:15px; font-size:0.9rem;"></div>
+        <p style="color:#9ca3af;"><i class="fa-solid fa-clock"></i> <span id="modal-time"></span></p>
+        <p style="color:#9ca3af;"><i class="fa-solid fa-location-dot"></i> <span id="modal-venue"></span></p>
+        <p id="modal-desc" style="color:#fff; margin-top:15px;"></p>
+        
+        <div style="margin-top:25px; display:flex; gap:15px;">
+            <a href="/events" id="modal-btn" class="btn-primary" style="flex:1; text-align:center; display:none;">Register Now</a>
+            <button onclick="closeCalModal()" style="flex:1; padding:12px; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:#fff; cursor:pointer; font-weight:bold;">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Adjust FullCalendar text colors for dark mode */
+.fc-theme-standard td, .fc-theme-standard th { border-color: rgba(255,255,255,0.1); }
+.fc .fc-toolbar-title { font-size: 1.5rem; color: var(--text-main); }
+.fc .fc-button-primary { background-color: var(--accent-color); border-color: var(--accent-color); }
+.fc .fc-button-primary:hover { background-color: var(--accent-hover); border-color: var(--accent-hover); }
+.fc-daygrid-day-number { color: var(--text-main); font-weight:bold; }
+.fc-col-header-cell-cushion { color: var(--text-main); font-weight:bold; padding: 10px; }
+.fc-event { cursor: pointer; border: none; padding: 2px 5px; font-weight: bold; }
+</style>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    
+    var registeredIds = [
+        {% for reg in registrations %}
+        "{{ reg.event_name|replace('"', '\\"') }}",
+        {% endfor %}
+    ];
+    
+    var calendarEvents = [
+        {% for event in all_events %}
+        {
+            title: "{{ event.name | replace('"', '\\"') }}",
+            start: "{{ event.event_date }}" + ("{{ event.event_time }}" !== "None" ? "T" + "{{ event.event_time }}" : ""),
+            extendedProps: {
+                description: "{{ event.description | replace('"', '\\"') | replace('\n', ' ') | replace('\r', '') }}",
+                venue: "{{ event.venue | replace('"', '\\"') }}"
+            },
+            color: registeredIds.includes("{{ event.name | replace('"', '\\"') }}") ? "#10b981" : "#4f46e5"
+        },
+        {% endfor %}
+    ];
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        themeSystem: 'standard',
+        events: calendarEvents,
+        height: 'auto',
+        eventClick: function(info) {
+            document.getElementById('modal-title').innerText = info.event.title;
+            // Native format for date
+            const dateStr = info.event.start.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+            document.getElementById('modal-time').innerText = dateStr !== "Invalid Date" ? dateStr : "Time TBC";
+            document.getElementById('modal-venue').innerText = info.event.extendedProps.venue || "Venue TBC";
+            document.getElementById('modal-desc').innerText = info.event.extendedProps.description || "No description provided.";
+            
+            if (info.event.backgroundColor === "#10b981") {
+                document.getElementById('modal-status').innerHTML = '<span style="color:#10b981; font-weight:bold; font-size:1.1rem;"><i class="fa-solid fa-circle-check"></i> Registration Confirmed!</span>';
+                document.getElementById('modal-btn').style.display = 'none';
+            } else {
+                document.getElementById('modal-status').innerHTML = '<span style="color:#818cf8; font-weight:bold; font-size:1.1rem;"><i class="fa-solid fa-calendar-plus"></i> Open for Registration</span>';
+                document.getElementById('modal-btn').style.display = 'inline-block';
+            }
+            
+            document.getElementById('calendar-modal').style.display = 'flex';
+        }
+    });
+    calendar.render();
+});
+function closeCalModal() {
+    document.getElementById('calendar-modal').style.display = 'none';
+}
+</script>
+
+{% endblock %}
