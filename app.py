@@ -212,12 +212,12 @@ def feedback():
                     msg_body = f"Hi {username},\n\nThank you so much for attending '{event_name}' and leaving your valuable feedback!\n\nWe appreciate your input and hope to see you at future events.\n\nBest Regards,\nEventopia Team"
                     msg = MIMEText(msg_body)
                     msg["Subject"] = "Thank You for Your Feedback!"
-                    msg["From"] = "atharvkudtarkar4406@gmail.com"
+                   msg["From"] = os.getenv("EMAIL_USER")
                     msg["To"] = email
                     
                     server = smtplib.SMTP("smtp.gmail.com", 587)
                     server.starttls()
-                    server.login("atharvkudtarkar4406@gmail.com", "dxnt tdxx egdg sgua")
+                    server.login(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"))
                     server.send_message(msg)
                     server.quit()
                 except Exception as e:
